@@ -1,1 +1,3 @@
 rootProject.name = 'resource-song-service'
+include 'song-service'
+include 'resource-service'
