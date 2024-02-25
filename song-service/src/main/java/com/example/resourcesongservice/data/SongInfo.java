@@ -25,11 +25,8 @@ public class SongInfo {
     @Column
     private String album;
 
-    @Column(name = "minutes")
-    private int durationMin;
-
-    @Column(name = "seconds")
-    private int durationSec;
+    @Column
+    private String length;
 
     @Column
     private Long resourceId;
