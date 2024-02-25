@@ -1,0 +1,12 @@
+server:
+  port: 7084
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:7003/resources
+    username: postgres
+    password: root
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
