@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.time.Year;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -67,15 +66,9 @@ public class SongInfoServiceImpl implements com.example.resourcesongservice.serv
     private void validateSongInfo(SongInfo songInfo) {
         //validate length
         if (!validateResourceId(songInfo.getResourceId())
-                || !validateLength(songInfo.getLength())
-                || !validateYear(songInfo.getYear())) {
+                || !validateLength(songInfo.getLength())) {
             throw new WrongMetadataProvidedException();
         }
-    }
-
-    private boolean validateYear(int year) {
-        var y = Year.of(year);
-        return year > 1850 && (Year.now().isAfter(y) || Year.now().equals(y));
     }
 
     private boolean validateResourceId(long resourceId) {

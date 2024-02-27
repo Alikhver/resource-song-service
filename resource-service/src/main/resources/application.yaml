@@ -4,7 +4,7 @@ server:
     include-stacktrace: never
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:7003/resources
+    url: jdbc:postgresql://localhost:7004/resources
     username: postgres
     password: root
     driver-class-name: org.postgresql.Driver
@@ -12,3 +12,10 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: update
+my:
+  client:
+    song-service:
+      scheme: http
+      host: localhost
+      port: 7083
+      endpoint: ping

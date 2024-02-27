@@ -32,5 +32,5 @@ public class SongInfo {
     private Long resourceId;
 
     @Column
-    private int year;
+    private String year;
 }
