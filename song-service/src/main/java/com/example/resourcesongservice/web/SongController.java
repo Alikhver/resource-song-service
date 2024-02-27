@@ -33,9 +33,16 @@ public class SongController {
     }
 
     @DeleteMapping
-    public ResponseEntity<Map<String, Object>> deleteSongMedatada(@RequestParam String ids) {
+    public ResponseEntity<Map<String, Object>> deleteSongMedatada(@RequestParam(required = false) String ids) {
         log.info("DeleteSongMedatada invoked with params: {}", ids);
         var deletedIds = songInfoService.deleteSongInfos(ids);
+        return ResponseEntity.ok(Map.of("ids", deletedIds));
+    }
+
+    @DeleteMapping(value = "/by-resource")
+    public ResponseEntity<Map<String, Object>> deleteSongMedatadaByResourceId(@RequestParam String resourceIds) {
+        log.info("DeleteSongMedatadaByResourceId invoked with params: {}", resourceIds);
+        var deletedIds = songInfoService.deleteSongInfoByResourceIds(resourceIds);
         return ResponseEntity.ok(Map.of("ids", deletedIds));
     }
 }

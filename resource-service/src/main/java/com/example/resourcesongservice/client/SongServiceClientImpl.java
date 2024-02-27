@@ -17,7 +17,7 @@ public class SongServiceClientImpl implements SongServiceClient {
 
     @Override
     public void saveMetadata(SongInfoDto songInfoDto) {
-        log.info("Sending request to Song Service: {}", songInfoDto);
+        log.info("Sending create request to Song Service: {}", songInfoDto);
         webClient.post()
                 .uri("http://localhost:7083/songs")
 //                .uri(uri -> uri.scheme(bravoClientConfig.getScheme())
@@ -26,6 +26,20 @@ public class SongServiceClientImpl implements SongServiceClient {
 //                        .path(bravoClientConfig.getEndpoint())
 //                        .build())
                 .bodyValue(songInfoDto)
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .retrieve().toBodilessEntity().block();
+    }
+
+    @Override
+    public void deleteMetadataByResourceId(Long id) {
+        log.info("Sending delete by resource id request to Song Service: {}", id);
+        webClient.delete()
+                .uri("http://localhost:7083/songs/by-resource?resourceIds=" + id)
+//                .uri(uri -> uri.scheme(bravoClientConfig.getScheme())
+//                        .host(bravoClientConfig.getHost())
+//                        .port(bravoClientConfig.getPort())
+//                        .path(bravoClientConfig.getEndpoint())
+//                        .build())
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .retrieve().toBodilessEntity().block();
     }

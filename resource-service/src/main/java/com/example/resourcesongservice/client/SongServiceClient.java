@@ -5,4 +5,6 @@ import com.example.resourcesongservice.dto.SongInfoDto;
 public interface SongServiceClient {
 
     void saveMetadata(SongInfoDto songInfoDto);
+
+    void deleteMetadataByResourceId(Long id);
 }

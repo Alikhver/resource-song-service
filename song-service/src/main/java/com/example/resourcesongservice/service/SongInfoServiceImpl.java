@@ -8,6 +8,7 @@ import com.example.resourcesongservice.exception.WrongMetadataProvidedException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,6 +46,7 @@ public class SongInfoServiceImpl implements com.example.resourcesongservice.serv
 
     @Override
     public List<Long> deleteSongInfos(String ids) {
+        log.info("deleteSongInfos invoked with param: {}", ids);
         var idsList = new ArrayList<Long>();
         for (String s : ids.split(",")) {
             try {
@@ -55,12 +57,36 @@ public class SongInfoServiceImpl implements com.example.resourcesongservice.serv
         var deletedIds = new ArrayList<Long>();
         idsList.forEach(id -> {
             if (repository.existsById(id)) {
+                log.info("SongInfo id: {} deleted", ids);
                 repository.deleteById(id);
                 deletedIds.add(id);
             }
         });
 
         return deletedIds;
+    }
+
+    @Override
+    @Transactional
+    public List<Long> deleteSongInfoByResourceIds(String resourcesIds) {
+        log.info("deleteSongInfoByResourceIds invoked with param: {}", resourcesIds);
+        var idsList = new ArrayList<Long>();
+        for (String s : resourcesIds.split(",")) {
+            try {
+                idsList.add(Long.parseLong(s));
+            } catch (NumberFormatException ignored) {}
+        }
+
+        var deletedResourcesIds = new ArrayList<Long>();
+        idsList.forEach(id -> {
+            if (repository.existsByResourceId(id)) {
+                repository.removeByResourceId(id);
+                log.info("SongInfo by resource id: {} deleted", id);
+                deletedResourcesIds.add(id);
+            }
+        });
+
+        return deletedResourcesIds;
     }
 
     private void validateSongInfo(SongInfo songInfo) {

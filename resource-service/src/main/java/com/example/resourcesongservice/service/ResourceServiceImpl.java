@@ -51,6 +51,7 @@ public class ResourceServiceImpl implements ResourceService {
         idsList.forEach(id -> {
             if (resourceRepository.existsById(id)) {
                 resourceRepository.deleteById(id);
+                songClient.deleteMetadataByResourceId(id);
                 deletedIds.add(id);
             }
         });
