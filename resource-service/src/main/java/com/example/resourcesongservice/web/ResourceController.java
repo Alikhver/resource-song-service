@@ -10,6 +10,7 @@ import org.xml.sax.SAXException;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -31,7 +32,7 @@ public class ResourceController {
     }
 
     @DeleteMapping
-    public ResponseEntity<?> deleteByIds(@RequestParam String ids) {
+    public ResponseEntity<Map<String, List<Long>>> deleteByIds(@RequestParam String ids) {
         var deletedIds = resourceService.deleteByIds(ids);
         return ResponseEntity.ok().body(Map.of("ids", deletedIds));
     }
