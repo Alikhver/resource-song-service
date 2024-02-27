@@ -4,13 +4,13 @@ import com.example.resourcesongservice.service.ResourceService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tika.exception.TikaException;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import org.xml.sax.SAXException;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -23,5 +23,16 @@ public class ResourceController {
     @PostMapping(consumes = "audio/mpeg")
     public Long upload(InputStream data) throws IOException, TikaException, SAXException {
         return resourceService.createResource(data);
+    }
+
+    @GetMapping(value = "/{id}")
+    public byte[] get(@PathVariable Long id) {
+        return resourceService.getResourceById(id);
+    }
+
+    @DeleteMapping
+    public ResponseEntity<?> deleteByIds(@RequestParam String ids) {
+        var deletedIds = resourceService.deleteByIds(ids);
+        return ResponseEntity.ok().body(Map.of("ids", deletedIds));
     }
 }
