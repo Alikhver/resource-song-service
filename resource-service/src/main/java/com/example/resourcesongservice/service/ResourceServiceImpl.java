@@ -88,7 +88,7 @@ public class ResourceServiceImpl implements ResourceService {
     }
 
     private String parseName(Metadata metadata) {
-        return metadata.get("title");
+        return metadata.get("dc:title");
     }
 
     private String parseAlbum(Metadata metadata) {
@@ -96,7 +96,7 @@ public class ResourceServiceImpl implements ResourceService {
     }
 
     private String parseArtist(Metadata metadata) {
-        return metadata.get("creator");
+        return metadata.get("xmpDM:albumArtist");
     }
 
     private String parseLength(Metadata metadata) {
