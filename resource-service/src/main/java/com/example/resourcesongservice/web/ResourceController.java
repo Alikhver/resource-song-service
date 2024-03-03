@@ -22,8 +22,10 @@ public class ResourceController {
     private final ResourceService resourceService;
 
     @PostMapping(consumes = "audio/mpeg")
-    public Long upload(InputStream data) throws IOException, TikaException, SAXException {
-        return resourceService.createResource(data);
+    public ResponseEntity upload(InputStream data) throws IOException, TikaException, SAXException {
+        log.info("ResourceController upload invoked");
+        Long response = resourceService.createResource(data);
+        return ResponseEntity.ok().body(Map.of("id", response));
     }
 
     @GetMapping(value = "/{id}")
