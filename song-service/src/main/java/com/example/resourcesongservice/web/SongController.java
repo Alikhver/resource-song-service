@@ -27,9 +27,9 @@ public class SongController {
 
     @GetMapping("/{id}")
     public ResponseEntity<SongInfoDto> getSongMetadata(@PathVariable long id) throws SongInfoNotFoundException {
-            log.info("GetSongMetadata invoked with params: {}", id);
-            var songInfo = songInfoService.getMetadata(id);
-            return ResponseEntity.ok().body(songInfo);
+        log.info("GetSongMetadata invoked with params: {}", id);
+        var songInfo = songInfoService.getMetadata(id);
+        return ResponseEntity.ok().body(songInfo);
     }
 
     @DeleteMapping

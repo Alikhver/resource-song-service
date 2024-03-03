@@ -51,6 +51,8 @@ public class ResourceServiceImpl implements ResourceService {
         idsList.forEach(id -> {
             if (resourceRepository.existsById(id)) {
                 resourceRepository.deleteById(id);
+                log.info("Resource with id = {} deleted", id);
+                //TODO split metadata deletion and resource deletion. Call deleteMetadataByResourceId once with all ids
                 songClient.deleteMetadataByResourceId(id);
                 deletedIds.add(id);
             }
@@ -63,25 +65,27 @@ public class ResourceServiceImpl implements ResourceService {
     public Long createResource(InputStream data) throws TikaException, IOException, SAXException {
         BodyContentHandler handler = new BodyContentHandler();
         Metadata metadata = new Metadata();
-        ParseContext pcontext = new ParseContext();
+        ParseContext pContext = new ParseContext();
         byte[] byteArray = data.readAllBytes();
 
         Mp3Parser Mp3Parser = new Mp3Parser();
-        Mp3Parser.parse(new ByteArrayInputStream(byteArray), handler, metadata, pcontext);
+        Mp3Parser.parse(new ByteArrayInputStream(byteArray), handler, metadata, pContext);
 
         Resource resource = new Resource();
         resource.setContent(byteArray);
-        long resourceId = resourceRepository.save(resource).getId();
+        long id = resourceRepository.save(resource).getId();
+        //TODO add validation
+        log.info("Song Info saved: {}", resource);
         SongInfoDto songInfoDto = SongInfoDto.builder()
                 .name(parseName(metadata))
                 .artist(parseArtist(metadata))
                 .album(parseAlbum(metadata))
                 .length(parseLength(metadata))
                 .year(parseYear(metadata))
-                .resourceId(resourceId)
+                .resourceId(id)
                 .build();
         songClient.saveMetadata(songInfoDto);
-        return resourceId;
+        return id;
     }
 
     private String parseYear(Metadata metadata) {
