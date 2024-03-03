@@ -15,6 +15,6 @@ my:
   client:
     song-service:
       scheme: http
-      host: localhost
-      port: 7083
-      endpoint: ping
+      host: song-service
+      port: 8080
+      endpoint: songs/by-resource

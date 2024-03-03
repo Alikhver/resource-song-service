@@ -6,8 +6,8 @@ import org.springframework.stereotype.Component;
 
 @Data
 @Component
-@ConfigurationProperties("my.client.bravo")
-public class BravoClientProperties {
+@ConfigurationProperties("my.client.song-service")
+public class SongClientProperties {
     private String scheme;
     private String host;
     private String port;
