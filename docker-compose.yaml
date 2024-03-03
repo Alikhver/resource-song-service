@@ -1,0 +1,41 @@
+version: "3.8"
+services:
+  resource-service:
+    build: ./resource-service
+    ports:
+      - "7080:8080"
+    restart: always
+    environment:
+      - DATABASE_URL=jdbc:postgresql://resource-service-database:5432/${RESOURCE_SERVICE_DATABASE_NAME}
+      - POSTGRES_USER=${RESOURCE_SERVICE_DATABASE_USER}
+      - POSTGRES_PASSWORD=${RESOURCE_SERVICE_DATABASE_PASSWORD}
+    depends_on:
+      - resource-service-database
+      - song-service
+
+  song-service:
+    build: ./song-service
+    environment:
+      - DATABASE_URL=jdbc:postgresql://resource-service-database:5432/${SONG_SERVICE_DATABASE_NAME}
+      - POSTGRES_USER=${SONG_SERVICE_DATABASE_USER}
+      - POSTGRES_PASSWORD=${SONG_SERVICE_DATABASE_PASSWORD}
+    restart: always
+    depends_on:
+      - song-service-database
+
+  resource-service-database:
+    image: postgres:16.1-bullseye
+    ports:
+      - "7432:5432"
+    volumes:
+      - resource-service-database:/var/lib/postgresql/data
+
+  song-service-database:
+    image: postgres:16.1-bullseye
+    ports:
+      - "8432:5432"
+    volumes:
+      - song-service-database:/var/lib/postgresql/data
+volumes:
+  resource-service-database:
+  song-service-database:
