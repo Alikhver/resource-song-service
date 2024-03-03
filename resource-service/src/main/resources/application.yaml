@@ -17,4 +17,4 @@ my:
       scheme: http
       host: song-service
       port: 8080
-      endpoint: songs/by-resource
+      endpoint: songs

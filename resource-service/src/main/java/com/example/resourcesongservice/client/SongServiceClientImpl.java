@@ -40,7 +40,7 @@ public class SongServiceClientImpl implements SongServiceClient {
                         .host(songClientProperties.getHost())
                         .port(songClientProperties.getPort())
                         .path(songClientProperties.getEndpoint())
-                        .queryParam("resourceIds", id.toString())
+                        .queryParam("ids", id.toString())
                         .build())
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .retrieve().toBodilessEntity().block();

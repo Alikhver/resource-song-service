@@ -13,7 +13,6 @@ import lombok.Setter;
 public class SongInfo {
     @Id
     @Column
-    @GeneratedValue(strategy =  GenerationType.IDENTITY)
     private Long id;
 
     @Column
@@ -27,9 +26,6 @@ public class SongInfo {
 
     @Column
     private String length;
-
-    @Column
-    private Long resourceId;
 
     @Column
     private String year;
