@@ -22,7 +22,7 @@ public class ResourceController {
     private final ResourceService resourceService;
 
     @PostMapping(consumes = "audio/mpeg")
-    public ResponseEntity upload(InputStream data) throws IOException, TikaException, SAXException {
+    public ResponseEntity<Map<String, Long>> upload(InputStream data) throws IOException, TikaException, SAXException {
         log.info("ResourceController upload invoked");
         Long response = resourceService.createResource(data);
         return ResponseEntity.ok().body(Map.of("id", response));
@@ -30,11 +30,13 @@ public class ResourceController {
 
     @GetMapping(value = "/{id}")
     public byte[] get(@PathVariable Long id) {
+        log.info("GetResource by id invoked with params: {}", id);
         return resourceService.getResourceById(id);
     }
 
     @DeleteMapping
     public ResponseEntity<Map<String, List<Long>>> deleteByIds(@RequestParam String ids) {
+        log.info("Delete Resource by id invoked with params: {}", ids);
         var deletedIds = resourceService.deleteByIds(ids);
         return ResponseEntity.ok().body(Map.of("ids", deletedIds));
     }

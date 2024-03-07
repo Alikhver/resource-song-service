@@ -27,22 +27,15 @@ public class SongController {
 
     @GetMapping("/{id}")
     public ResponseEntity<SongInfoDto> getSongMetadata(@PathVariable long id) throws SongInfoNotFoundException {
-            log.info("GetSongMetadata invoked with params: {}", id);
-            var songInfo = songInfoService.getMetadata(id);
-            return ResponseEntity.ok().body(songInfo);
+        log.info("GetSongMetadata invoked with params: {}", id);
+        var songInfo = songInfoService.getMetadata(id);
+        return ResponseEntity.ok().body(songInfo);
     }
 
     @DeleteMapping
-    public ResponseEntity<Map<String, Object>> deleteSongMedatada(@RequestParam(required = false) String ids) {
+    public ResponseEntity<Map<String, Object>> deleteSongMedatada(@RequestParam String ids) {
         log.info("DeleteSongMedatada invoked with params: {}", ids);
         var deletedIds = songInfoService.deleteSongInfos(ids);
-        return ResponseEntity.ok(Map.of("ids", deletedIds));
-    }
-
-    @DeleteMapping(value = "/by-resource")
-    public ResponseEntity<Map<String, Object>> deleteSongMedatadaByResourceId(@RequestParam String resourceIds) {
-        log.info("DeleteSongMedatadaByResourceId invoked with params: {}", resourceIds);
-        var deletedIds = songInfoService.deleteSongInfoByResourceIds(resourceIds);
         return ResponseEntity.ok(Map.of("ids", deletedIds));
     }
 }
