@@ -6,6 +6,14 @@ services:
       - "4566:4566"
     restart: always
 
+  discovery-service:
+    build: ./discovery-service
+    container_name: "discovery-service"
+    ports:
+      - "8761:8761"
+    restart: always
+
+
   resource-service:
     build: ./resource-service
     container_name: "resource-service"
@@ -18,9 +26,12 @@ services:
       - DATABASE_URL=jdbc:postgresql://resource-service-database:5432/${RESOURCE_SERVICE_DATABASE_NAME}
       - POSTGRES_USER=${RESOURCE_SERVICE_DATABASE_USER}
       - POSTGRES_PASSWORD=${RESOURCE_SERVICE_DATABASE_PASSWORD}
+      - EUREKA_CLIENT_URL=${SERVICE_DISCOVERY_URL}
     depends_on:
+      - discovery-service
       - resource-service-database
       - song-service
+      - localstack
 
   song-service:
     build: ./song-service
@@ -32,8 +43,10 @@ services:
       - DATABASE_URL=jdbc:postgresql://song-service-database:5432/${SONG_SERVICE_DATABASE_NAME}
       - POSTGRES_USER=${SONG_SERVICE_DATABASE_USER}
       - POSTGRES_PASSWORD=${SONG_SERVICE_DATABASE_PASSWORD}
+      - EUREKA_CLIENT_URL=${SERVICE_DISCOVERY_URL}
     restart: always
     depends_on:
+      - discovery-service
       - song-service-database
 
   resource-service-database:
