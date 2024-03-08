@@ -4,11 +4,13 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @Table(name = "resource")
 @Getter
 @Setter
+@ToString
 @RequiredArgsConstructor
 public class Resource {
     @Id
@@ -16,6 +18,7 @@ public class Resource {
     @Column
     private Long id;
 
-    @Column(name = "music_content")
-    private byte[] content;
+
+    @Column(name = "s3_content_key")
+    private String s3ContentKey;
 }

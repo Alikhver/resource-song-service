@@ -18,3 +18,10 @@ my:
       host: song-service
       port: 8080
       endpoint: songs
+    s3:
+      url: http://localstack:4566  # Need this only because of the localhost
+      accessKey: fake_access_key  # Any value is accepted by the S3Client and by the localstack
+      secretKey: fake_secret_key  # Any value is accepted by the S3Client and by the localstack
+      bucket: com.hrm.my.bucket.1 # Should be unique across all AWS S3 Buckets globally (locally for localstack)
+      region: us-west-1           # Any value is accepted by the S3Client and by the localstack
+

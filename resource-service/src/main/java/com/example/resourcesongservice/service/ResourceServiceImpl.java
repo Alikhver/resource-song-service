@@ -1,6 +1,7 @@
 package com.example.resourcesongservice.service;
 
 import com.example.resourcesongservice.client.SongServiceClient;
+import com.example.resourcesongservice.client.StorageClient;
 import com.example.resourcesongservice.data.Resource;
 import com.example.resourcesongservice.data.ResourceRepository;
 import com.example.resourcesongservice.dto.SongInfoDto;
@@ -20,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -28,34 +30,42 @@ public class ResourceServiceImpl implements ResourceService {
 
     private final SongServiceClient songClient;
     private final ResourceRepository resourceRepository;
+    private final StorageClient storageClient;
 
     @Override
     public byte[] getResourceById(Long id) {
         log.info("GetResourceById invoked with param: {}", id);
-        return resourceRepository.findById(id)
+        String s3contentKey = resourceRepository.findById(id)
                 .orElseThrow(ResourceNotFoundByIdException::new)
-                .getContent();
+                .getS3ContentKey();
+
+        return storageClient.download(s3contentKey);
     }
 
     @Override
     public List<Long> deleteByIds(String idsString) {
-        var idsList = new ArrayList<Long>();
+        var resourcesToDelete = new ArrayList<Resource>();
         for (String s : idsString.split(",")) {
             try {
-                idsList.add(Long.parseLong(s));
-            } catch (NumberFormatException ignored) {
+                var resource = resourceRepository.findById(Long.parseLong(s))
+                        .orElseThrow(ResourceNotFoundByIdException::new);
+                resourcesToDelete.add(resource);
+            } catch (NumberFormatException | ResourceNotFoundByIdException ignored) {
             }
         }
 
         var deletedIds = new ArrayList<Long>();
-        idsList.forEach(id -> {
-            if (resourceRepository.existsById(id)) {
-                resourceRepository.deleteById(id);
-                log.info("Resource with id = {} deleted", id);
+        resourcesToDelete.forEach(resource -> {
+                Long resourceId = resource.getId();
+
+                //TODO add rollback conditions when other request were not successful and vice versa
+                songClient.deleteMetadataByResourceId(resourceId);
+                storageClient.delete(resource.getS3ContentKey());
+                resourceRepository.deleteById(resourceId);
+                log.info("Resource with id = {} deleted", resourceId);
                 //TODO split metadata deletion and resource deletion. Call deleteMetadataByResourceId once with all ids
-                songClient.deleteMetadataByResourceId(id);
-                deletedIds.add(id);
-            }
+
+                deletedIds.add(resourceId);
         });
 
         return deletedIds;
@@ -71,11 +81,15 @@ public class ResourceServiceImpl implements ResourceService {
         Mp3Parser Mp3Parser = new Mp3Parser();
         Mp3Parser.parse(new ByteArrayInputStream(byteArray), handler, metadata, pContext);
 
+        String s3ContentKey = uploadContentToS3(byteArray);
+
         Resource resource = new Resource();
-        resource.setContent(byteArray);
-        long id = resourceRepository.save(resource).getId();
+        resource.setS3ContentKey(s3ContentKey);
+
+        var id = resourceRepository.save(resource).getId();
+        log.info("New Resource saved: {}", resource);
+
         //TODO add validation
-        log.info("Song Info saved: {}", resource);
         SongInfoDto songInfoDto = SongInfoDto.builder()
                 .name(parseName(metadata))
                 .artist(parseArtist(metadata))
@@ -84,8 +98,15 @@ public class ResourceServiceImpl implements ResourceService {
                 .year(parseYear(metadata))
                 .resourceId(id)
                 .build();
+
         songClient.saveMetadata(songInfoDto);
         return id;
+    }
+
+    private String uploadContentToS3(byte[] content) {
+        String s3ContentKey = UUID.randomUUID().toString();
+        storageClient.upload(s3ContentKey, content);
+        return s3ContentKey;
     }
 
     private String parseYear(Metadata metadata) {
