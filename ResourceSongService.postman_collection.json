@@ -1,0 +1,173 @@
+{
+	"info": {
+		"_postman_id": "d4ea9785-6b15-4c92-a281-301f99d79189",
+		"name": "ResourceSongService",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "14942032"
+	},
+	"item": [
+		{
+			"name": "Song requests",
+			"item": [
+				{
+					"name": "get info by info id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:7081/songs/8",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "7081",
+							"path": [
+								"songs",
+								"8"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create info",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"We are the champions\",\r\n    \"artist\": \"Queen\",\r\n    \"album\": \"News of the world\",\r\n    \"length\": \"2:59\",\r\n    \"resourceId\": \"123432\",\r\n    \"year\": \"1977\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:7081/songs",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "7081",
+							"path": [
+								"songs"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete info",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": []
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:7081/songs?ids=1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "7081",
+							"path": [
+								"songs"
+							],
+							"query": [
+								{
+									"key": "ids",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Resource requests",
+			"item": [
+				{
+					"name": "get resource by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:7080/resources/14",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "7080",
+							"path": [
+								"resources",
+								"14"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create resource",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "file",
+							"file": {
+								"src": "/C:/Users/alikhver/Desktop/file_199.mp3"
+							}
+						},
+						"url": {
+							"raw": "http://localhost:7080/resources",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "7080",
+							"path": [
+								"resources"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete resource",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:7080/resources?ids=1,2,13ю ваыффы,13, 12, 14",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "7080",
+							"path": [
+								"resources"
+							],
+							"query": [
+								{
+									"key": "ids",
+									"value": "1,2,13ю ваыффы,13, 12, 14"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
