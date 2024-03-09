@@ -18,9 +18,10 @@ services:
     ports:
       - "7080:8080"
 #      port for debug
-      - "8000:8000"
+      - "5555:5555"
     restart: always
     environment:
+      - JAVA_TOOL_OPTIONS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5555"
       - DATABASE_URL=jdbc:postgresql://resource-service-database:5432/${RESOURCE_SERVICE_DATABASE_NAME}
       - POSTGRES_USER=${RESOURCE_SERVICE_DATABASE_USER}
       - POSTGRES_PASSWORD=${RESOURCE_SERVICE_DATABASE_PASSWORD}
