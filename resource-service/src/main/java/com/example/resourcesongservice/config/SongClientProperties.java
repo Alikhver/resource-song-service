@@ -8,8 +8,6 @@ import org.springframework.stereotype.Component;
 @Component
 @ConfigurationProperties("my.client.song-service")
 public class SongClientProperties {
-    private String scheme;
-    private String host;
-    private String port;
+    private String id;
     private String endpoint;
 }

@@ -35,6 +35,7 @@ public class ResourceServiceImpl implements ResourceService {
     @Override
     public byte[] getResourceById(Long id) {
         log.info("GetResourceById invoked with param: {}", id);
+
         String s3contentKey = resourceRepository.findById(id)
                 .orElseThrow(ResourceNotFoundByIdException::new)
                 .getS3ContentKey();

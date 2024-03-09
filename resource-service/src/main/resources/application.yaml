@@ -16,9 +16,7 @@ spring:
 my:
   client:
     song-service:
-      scheme: http
-      host: song-service
-      port: 8080
+      id: SONG-SERVICE
       endpoint: songs
     s3:
       url: http://localstack:4566  # Need this only because of the localhost
