@@ -1,36 +1,56 @@
 version: "3.8"
 services:
+  localstack:
+    image: localstack/localstack:3.0.2
+    ports:
+      - "4566:4566"
+    restart: always
+
+  discovery-service:
+    build: ./discovery-service
+    ports:
+      - "8761:8761"
+    restart: always
+
+
   resource-service:
     build: ./resource-service
-    container_name: "resource-service"
     ports:
       - "7080:8080"
+#      port for debug
+      - "5555:5555"
     restart: always
     environment:
+      - JAVA_TOOL_OPTIONS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5555"
       - DATABASE_URL=jdbc:postgresql://resource-service-database:5432/${RESOURCE_SERVICE_DATABASE_NAME}
       - POSTGRES_USER=${RESOURCE_SERVICE_DATABASE_USER}
       - POSTGRES_PASSWORD=${RESOURCE_SERVICE_DATABASE_PASSWORD}
+      - EUREKA_CLIENT_URL=${SERVICE_DISCOVERY_URL}
     depends_on:
+      - discovery-service
       - resource-service-database
       - song-service
+      - localstack
 
   song-service:
     build: ./song-service
-    container_name: "song-service"
-#    ports enabled for test reasons
-    ports:
-      - "7081:8080"
+    #    ports enabled for test reasons
+#    ports:
+#      - "7081:8080"
     environment:
       - DATABASE_URL=jdbc:postgresql://song-service-database:5432/${SONG_SERVICE_DATABASE_NAME}
       - POSTGRES_USER=${SONG_SERVICE_DATABASE_USER}
       - POSTGRES_PASSWORD=${SONG_SERVICE_DATABASE_PASSWORD}
+      - EUREKA_CLIENT_URL=${SERVICE_DISCOVERY_URL}
     restart: always
+    deploy:
+      replicas: 3
     depends_on:
+      - discovery-service
       - song-service-database
 
   resource-service-database:
     image: postgres:16.1-bullseye
-    container_name: "resource-service-database"
     #    ports enabled for test reasons
     ports:
       - "7432:5432"
@@ -43,7 +63,6 @@ services:
 
   song-service-database:
     image: postgres:16.1-bullseye
-    container_name: "song-service-database"
     #    ports enabled for test reasons
     ports:
       - "8432:5432"

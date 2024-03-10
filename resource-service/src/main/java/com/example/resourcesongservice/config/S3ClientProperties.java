@@ -6,8 +6,11 @@ import org.springframework.stereotype.Component;
 
 @Data
 @Component
-@ConfigurationProperties("my.client.song-service")
-public class SongClientProperties {
-    private String id;
-    private String endpoint;
+@ConfigurationProperties("my.client.s3")
+public class S3ClientProperties {
+    private String url;
+    private String accessKey;
+    private String secretKey;
+    private String bucket;
+    private String region;
 }
