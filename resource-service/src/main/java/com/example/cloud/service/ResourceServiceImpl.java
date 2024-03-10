@@ -1,5 +1,6 @@
 package com.example.cloud.service;
 
+import com.example.cloud.publisher.MessagePublisher;
 import com.example.cloud.client.SongServiceClient;
 import com.example.cloud.client.StorageClient;
 import com.example.cloud.data.Resource;
@@ -31,6 +32,7 @@ public class ResourceServiceImpl implements ResourceService {
     private final SongServiceClient songClient;
     private final ResourceRepository resourceRepository;
     private final StorageClient storageClient;
+    private final MessagePublisher messagePublisher;
 
     @Override
     public byte[] getResourceById(Long id) {
@@ -60,10 +62,13 @@ public class ResourceServiceImpl implements ResourceService {
                 Long resourceId = resource.getId();
 
                 //TODO add rollback conditions when other request were not successful and vice versa
-                songClient.deleteMetadataByResourceId(resourceId);
+//                TODO implement song service call via resource processor
+//                songClient.deleteMetadataByResourceId(resourceId);
                 storageClient.delete(resource.getS3ContentKey());
                 resourceRepository.deleteById(resourceId);
                 log.info("Resource with id = {} deleted", resourceId);
+
+                messagePublisher.postDeleteMessage("Deleted resource with id:" + resourceId);
                 //TODO split metadata deletion and resource deletion. Call deleteMetadataByResourceId once with all ids
 
                 deletedIds.add(resourceId);
@@ -89,18 +94,19 @@ public class ResourceServiceImpl implements ResourceService {
 
         var id = resourceRepository.save(resource).getId();
         log.info("New Resource saved: {}", resource);
-
+        messagePublisher.postCreateMessage("Created0 resource with id:" + id);
+        // TODO move song info creation via resource processor
         //TODO add validation
-        SongInfoDto songInfoDto = SongInfoDto.builder()
-                .name(parseName(metadata))
-                .artist(parseArtist(metadata))
-                .album(parseAlbum(metadata))
-                .length(parseLength(metadata))
-                .year(parseYear(metadata))
-                .resourceId(id)
-                .build();
+//        SongInfoDto songInfoDto = SongInfoDto.builder()
+//                .name(parseName(metadata))
+//                .artist(parseArtist(metadata))
+//                .album(parseAlbum(metadata))
+//                .length(parseLength(metadata))
+//                .year(parseYear(metadata))
+//                .resourceId(id)
+//                .build();
 
-        songClient.saveMetadata(songInfoDto);
+//        songClient.saveMetadata(songInfoDto);
         return id;
     }
 

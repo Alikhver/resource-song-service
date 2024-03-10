@@ -18,6 +18,17 @@ services:
       - "8761:8761"
     restart: always
 
+  resource-processor:
+    build: ./resource-processor
+    environment:
+      - EUREKA_CLIENT_URL=${SERVICE_DISCOVERY_URL}
+    restart: always
+#    deploy:
+#      replicas: 3
+    depends_on:
+      - message-broker
+      - discovery-service
+      - song-service
 
   resource-service:
     build: ./resource-service
@@ -49,8 +60,8 @@ services:
       - POSTGRES_PASSWORD=${SONG_SERVICE_DATABASE_PASSWORD}
       - EUREKA_CLIENT_URL=${SERVICE_DISCOVERY_URL}
     restart: always
-    deploy:
-      replicas: 3
+#    deploy:
+#      replicas: 3
     depends_on:
       - discovery-service
       - song-service-database
