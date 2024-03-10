@@ -4,6 +4,10 @@ server:
 spring:
   application:
     name: song-service
+  rabbitmq:
+    host: message-broker
+    username: guest
+    password: guest
   datasource:
     url: ${DATABASE_URL}
     username: ${POSTGRES_USER}
