@@ -44,17 +44,28 @@ public class SongInfoServiceImpl implements com.example.cloud.service.SongInfoSe
     }
 
     @Override
-    public List<Long> deleteSongInfos(String ids) {
-        log.info("deleteSongInfos invoked with param: {}", ids);
+    public List<Long> deleteSongInfos(String idsString) {
+        log.info("deleteSongInfos invoked with param: {}", idsString);
         var idsList = new ArrayList<Long>();
-        for (String s : ids.split(",")) {
+        for (String s : idsString.split(",")) {
             try {
                 idsList.add(Long.parseLong(s));
             } catch (NumberFormatException ignored) {}
         }
 
+        return deleteIfExist(idsList);
+    }
+
+
+    @Override
+    public List<Long> deleteSongInfos(List<Long> ids) {
+        log.info("deleteSongInfos invoked with param: {}", ids);
+        return deleteIfExist(ids);
+    }
+
+    private List<Long> deleteIfExist(List<Long> ids) {
         var deletedIds = new ArrayList<Long>();
-        idsList.forEach(id -> {
+        ids.forEach(id -> {
             if (repository.existsById(id)) {
                 log.info("SongInfo id: {} deleted", ids);
                 repository.deleteById(id);

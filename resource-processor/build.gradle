@@ -31,26 +31,26 @@ ext {
 }
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springframework.boot:spring-boot-starter-webflux'
-    implementation 'org.mapstruct:mapstruct:1.5.5.Final'
-    /* Messaging */
-    implementation 'org.springframework.boot:spring-boot-starter-amqp'
+    /* Apache TIKA */
+    implementation 'org.apache.tika:tika-core:2.9.0'
+    implementation 'org.apache.tika:tika-parsers:3.0.0-BETA'
+    implementation 'org.apache.tika:tika:3.0.0-BETA'
+    implementation 'org.apache.tika:tika-serialization:1.6'
+    implementation 'org.apache.tika:tika-bundle:1.6'
     /* Discovery */
     implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
-    /* AWS */
-    implementation platform('software.amazon.awssdk:bom:2.21.33')
-    implementation 'software.amazon.awssdk:s3'
-    implementation 'software.amazon.awssdk:apache-client'
-
-    compileOnly 'org.projectlombok:lombok'
+    /* Web */
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    /* Messaging */
+    implementation 'org.springframework.boot:spring-boot-starter-amqp'
+    /* Dev */
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
-    runtimeOnly 'org.postgresql:postgresql'
+    compileOnly 'org.projectlombok:lombok'
+    /* Annotation processors */
     annotationProcessor 'org.projectlombok:lombok'
-    annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
+    /* Test */
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'io.projectreactor:reactor-test'
 }
 
 dependencyManagement {

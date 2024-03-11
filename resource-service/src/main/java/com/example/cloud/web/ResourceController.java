@@ -1,12 +1,11 @@
 package com.example.cloud.web;
 
 import com.example.cloud.service.ResourceService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.tika.exception.TikaException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.xml.sax.SAXException;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,7 +21,7 @@ public class ResourceController {
     private final ResourceService resourceService;
 
     @PostMapping(consumes = "audio/mpeg")
-    public ResponseEntity<Map<String, Long>> upload(InputStream data) throws IOException, TikaException, SAXException {
+    public ResponseEntity<Map<String, Long>> upload(InputStream data) throws IOException {
         log.info("ResourceController upload invoked");
         Long response = resourceService.createResource(data);
         return ResponseEntity.ok().body(Map.of("id", response));
@@ -31,11 +30,12 @@ public class ResourceController {
     @GetMapping(value = "/{id}")
     public byte[] get(@PathVariable Long id) {
         log.info("GetResource by id invoked with params: {}", id);
-        return resourceService.getResourceById(id);
+        byte[] resourceById = resourceService.getResourceById(id);
+        return resourceById;
     }
 
     @DeleteMapping
-    public ResponseEntity<Map<String, List<Long>>> deleteByIds(@RequestParam String ids) {
+    public ResponseEntity<Map<String, List<Long>>> deleteByIds(@RequestParam String ids) throws JsonProcessingException {
         log.info("Delete Resource by id invoked with params: {}", ids);
         var deletedIds = resourceService.deleteByIds(ids);
         return ResponseEntity.ok().body(Map.of("ids", deletedIds));

@@ -10,5 +10,6 @@ public interface SongInfoService {
 
     SongInfoDto getMetadata(long id) throws SongInfoNotFoundException;
 
-    List<Long> deleteSongInfos(String ids);
+    List<Long> deleteSongInfos(String idsString);
+    List<Long> deleteSongInfos(List<Long> ids);
 }
