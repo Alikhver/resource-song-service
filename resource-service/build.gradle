@@ -35,11 +35,6 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
     implementation 'org.mapstruct:mapstruct:1.5.5.Final'
-    implementation 'org.apache.tika:tika-core:2.9.0'
-    implementation 'org.apache.tika:tika-parsers:3.0.0-BETA'
-    implementation 'org.apache.tika:tika:3.0.0-BETA'
-    implementation 'org.apache.tika:tika-serialization:1.6'
-    implementation 'org.apache.tika:tika-bundle:1.6'
     /* Messaging */
     implementation 'org.springframework.boot:spring-boot-starter-amqp'
     /* Discovery */

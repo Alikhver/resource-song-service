@@ -23,9 +23,22 @@ bootJar {
 
 repositories {
     mavenCentral()
+    maven { url 'https://repo.spring.io/milestone' }
+}
+
+ext {
+    set('springCloudVersion', "2022.0.4")
 }
 
 dependencies {
+    /* Apache TIKA */
+    implementation 'org.apache.tika:tika-core:2.9.0'
+    implementation 'org.apache.tika:tika-parsers:3.0.0-BETA'
+    implementation 'org.apache.tika:tika:3.0.0-BETA'
+    implementation 'org.apache.tika:tika-serialization:1.6'
+    implementation 'org.apache.tika:tika-bundle:1.6'
+    /* Discovery */
+    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
     /* Web */
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
@@ -38,6 +51,12 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
     /* Test */
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
 }
 
 tasks.named('test') {

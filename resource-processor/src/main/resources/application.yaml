@@ -1,5 +1,19 @@
 spring:
+  application:
+    name: resource-processor
   rabbitmq:
     host: message-broker
     username: guest
     password: guest
+my:
+  client:
+    song-service:
+      id: SONG-SERVICE
+      endpoint: songs
+    resource-service:
+      id: RESOURCE-SERVICE
+      endpoint: resources/{resourceId}
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_CLIENT_URL}

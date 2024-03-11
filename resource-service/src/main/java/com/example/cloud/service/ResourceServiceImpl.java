@@ -1,23 +1,16 @@
 package com.example.cloud.service;
 
-import com.example.cloud.publisher.MessagePublisher;
-import com.example.cloud.client.SongServiceClient;
 import com.example.cloud.client.StorageClient;
 import com.example.cloud.data.Resource;
 import com.example.cloud.data.ResourceRepository;
-import com.example.cloud.dto.SongInfoDto;
 import com.example.cloud.exception.ResourceNotFoundByIdException;
+import com.example.cloud.publisher.MessagePublisher;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.tika.exception.TikaException;
-import org.apache.tika.metadata.Metadata;
-import org.apache.tika.parser.ParseContext;
-import org.apache.tika.parser.mp3.Mp3Parser;
-import org.apache.tika.sax.BodyContentHandler;
 import org.springframework.stereotype.Service;
-import org.xml.sax.SAXException;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -29,10 +22,10 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ResourceServiceImpl implements ResourceService {
 
-    private final SongServiceClient songClient;
     private final ResourceRepository resourceRepository;
     private final StorageClient storageClient;
     private final MessagePublisher messagePublisher;
+    private final ObjectMapper objectMapper;
 
     @Override
     public byte[] getResourceById(Long id) {
@@ -46,7 +39,7 @@ public class ResourceServiceImpl implements ResourceService {
     }
 
     @Override
-    public List<Long> deleteByIds(String idsString) {
+    public List<Long> deleteByIds(String idsString) throws JsonProcessingException {
         var resourcesToDelete = new ArrayList<Resource>();
         for (String s : idsString.split(",")) {
             try {
@@ -62,30 +55,23 @@ public class ResourceServiceImpl implements ResourceService {
                 Long resourceId = resource.getId();
 
                 //TODO add rollback conditions when other request were not successful and vice versa
-//                TODO implement song service call via resource processor
-//                songClient.deleteMetadataByResourceId(resourceId);
                 storageClient.delete(resource.getS3ContentKey());
                 resourceRepository.deleteById(resourceId);
                 log.info("Resource with id = {} deleted", resourceId);
 
-                messagePublisher.postDeleteMessage("Deleted resource with id:" + resourceId);
                 //TODO split metadata deletion and resource deletion. Call deleteMetadataByResourceId once with all ids
 
                 deletedIds.add(resourceId);
         });
 
+        messagePublisher.postDeleteMessage(objectMapper.writeValueAsString(deletedIds));
+
         return deletedIds;
     }
 
     @Override
-    public Long createResource(InputStream data) throws TikaException, IOException, SAXException {
-        BodyContentHandler handler = new BodyContentHandler();
-        Metadata metadata = new Metadata();
-        ParseContext pContext = new ParseContext();
+    public Long createResource(InputStream data) throws IOException {
         byte[] byteArray = data.readAllBytes();
-
-        Mp3Parser Mp3Parser = new Mp3Parser();
-        Mp3Parser.parse(new ByteArrayInputStream(byteArray), handler, metadata, pContext);
 
         String s3ContentKey = uploadContentToS3(byteArray);
 
@@ -94,50 +80,14 @@ public class ResourceServiceImpl implements ResourceService {
 
         var id = resourceRepository.save(resource).getId();
         log.info("New Resource saved: {}", resource);
-        messagePublisher.postCreateMessage("Created0 resource with id:" + id);
-        // TODO move song info creation via resource processor
-        //TODO add validation
-//        SongInfoDto songInfoDto = SongInfoDto.builder()
-//                .name(parseName(metadata))
-//                .artist(parseArtist(metadata))
-//                .album(parseAlbum(metadata))
-//                .length(parseLength(metadata))
-//                .year(parseYear(metadata))
-//                .resourceId(id)
-//                .build();
-
-//        songClient.saveMetadata(songInfoDto);
+        messagePublisher.postCreateMessage(id);
         return id;
     }
 
     private String uploadContentToS3(byte[] content) {
         String s3ContentKey = UUID.randomUUID().toString();
         storageClient.upload(s3ContentKey, content);
+        log.info("Uploaded content to s3 with key: {}", s3ContentKey);
         return s3ContentKey;
-    }
-
-    private String parseYear(Metadata metadata) {
-        return metadata.get("xmpDM:releaseDate");
-    }
-
-    private String parseName(Metadata metadata) {
-        return metadata.get("dc:title");
-    }
-
-    private String parseAlbum(Metadata metadata) {
-        return metadata.get("xmpDM:album");
-    }
-
-    private String parseArtist(Metadata metadata) {
-        return metadata.get("xmpDM:albumArtist");
-    }
-
-    private String parseLength(Metadata metadata) {
-        String durationString = metadata.get("xmpDM:duration");
-        double milliseconds = Double.parseDouble(durationString);
-        int seconds = (int) (milliseconds / 1000);
-        int minutes = seconds / 60;
-        seconds %= 60;
-        return String.format("%d:%02d", minutes, seconds);
     }
 }
